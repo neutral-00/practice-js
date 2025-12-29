@@ -1,4 +1,4 @@
-## Project Setup
+# Project Setup
 
 ```
 D:\gp>pnpm create vite@latest practice-js --template vanilla
@@ -29,4 +29,66 @@ Progress: resolved 60, reused 8, downloaded 6, added 14, done
 
 devDependencies:
 + vite 7.3.0
+```
+
+---
+
+## Add Tailwind (modern Vite plugin setup — no PostCSS directives)
+
+### 🆕 What’s _actually new_ in Tailwind (important concept)
+
+```css
+@import "tailwindcss";
+```
+
+The Vite Tailwind plugin internally expands this into:
+
+- base
+- components
+- utilities
+
+---
+
+### Dev dependencies (minimum)
+
+```bash
+pnpm add -D tailwindcss @tailwindcss/vite
+```
+
+👉 Notice:
+❌ `postcss`
+❌ `autoprefixer`
+are **no longer required explicitly** in this path.
+
+---
+
+### `vite.config.js`
+
+In the project root create `vite.config.js` with the below content:
+
+```js
+import { defineConfig } from "vite";
+import tailwindcss from "@tailwindcss/vite";
+
+export default defineConfig({
+  plugins: [tailwindcss()],
+});
+```
+
+---
+
+### `src/style.css`
+
+```css
+@import "tailwindcss";
+```
+
+That’s it. Clean. Modern. Zero ceremony.
+
+---
+
+## Add Axios (HTTP Client)
+
+```sh
+pnpm add axios
 ```
