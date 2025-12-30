@@ -1,94 +1,145 @@
-# Project Setup
+# Axios - Tutorial
 
-```
-D:\gp>pnpm create vite@latest practice-js --template vanilla
-.../19b69d6f07b-627c                     |   +1 +
-.../19b69d6f07b-627c                     | Progress: resolved 1, reused 0, downloaded 1, added 1, done
-|
-o  Use rolldown-vite (Experimental)?:
-|  No
-|
-o  Install with pnpm and start now?
-|  Yes
-|
-o  Scaffolding project in D:\gp\practice-js...
-|
-o  Installing dependencies with pnpm...
+Let's learn to make api calls using the axios library.
 
-   ╭──────────────────────────────────────────╮
-   │                                          │
-   │   Update available! 10.23.0 → 10.26.2.   │
-   │   Changelog: https://pnpm.io/v/10.26.2   │
-   │     To update, run: pnpm self-update     │
-   │                                          │
-   ╰──────────────────────────────────────────╯
+#### What is Axios?
 
-Packages: +14
-++++++++++++++
-Progress: resolved 60, reused 8, downloaded 6, added 14, done
-
-devDependencies:
-+ vite 7.3.0
-```
+> Axios is a promise-based HTTP client used to communicate with APIs. It simplifies request configuration, interceptors, and error handling compared to the native `fetch` API.
 
 ---
 
-## Add Tailwind (modern Vite plugin setup — no PostCSS directives)
+## Project Metatdata
 
-### 🆕 What’s _actually new_ in Tailwind (important concept)
+- repository: https://github.com/neutral-00/practice-js
+- parent branch: main
+- branch: 10-axios
 
-```css
-@import "tailwindcss";
-```
+## Credits
 
-The Vite Tailwind plugin internally expands this into:
+- [Traversy Media](https://www.youtube.com/watch?v=6LyagkoRWYA)
 
-- base
-- components
-- utilities
+## Learning Objectives
 
----
+- [x] setup baseURL
+- [x] add Authorization token
+- [x] make a get request
+- [x] make a post request
+- [x] make a put request
+- [x] make a patch request
+- [x] make a delete request
+- [x] add logger via http interceptor
+- [x] handle errors globally
 
-### Dev dependencies (minimum)
+### 1️⃣ Installing Axios
 
 ```bash
-pnpm add -D tailwindcss @tailwindcss/vite
+pnpm add axios
 ```
-
-👉 Notice:
-❌ `postcss`
-❌ `autoprefixer`
-are **no longer required explicitly** in this path.
 
 ---
 
-### `vite.config.js`
-
-In the project root create `vite.config.js` with the below content:
+### 2️⃣ Creating an Axios Instance
 
 ```js
-import { defineConfig } from "vite";
-import tailwindcss from "@tailwindcss/vite";
+import axios from "axios";
 
-export default defineConfig({
-  plugins: [tailwindcss()],
+const api = axios.create({
+  baseURL: "https://jsonplaceholder.typicode.com",
+  headers: {
+    Authorization: "Bearer SOME_JWT_TOKEN",
+  },
 });
 ```
 
----
+**Why use `axios.create()`?**
 
-### `src/style.css`
-
-```css
-@import "tailwindcss";
-```
-
-That’s it. Clean. Modern. Zero ceremony.
+- Centralized configuration
+- Easy token management
+- Isolated interceptors
 
 ---
 
-## Add Axios (HTTP Client)
+### 3️⃣ Interceptors (Logging & Global Errors)
 
-```sh
-pnpm add axios
+#### Request Interceptor
+
+```js
+api.interceptors.request.use((config) => {
+  console.log(
+    `[${config.method.toUpperCase()}] ${config.url} | ${new Date().getTime()}`,
+  );
+  return config;
+});
 ```
+
+#### Response Interceptor
+
+```js
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("Request failed:", error.message);
+    return Promise.reject(error);
+  },
+);
+```
+
+> Interceptors run **before requests** and **after responses**, making them ideal for logging, auth, and error handling.
+
+---
+
+### 4️⃣ Making API Requests
+
+#### GET
+
+```js
+const res = await api.get("/todos", {
+  params: { _limit: 5 },
+});
+```
+
+#### POST
+
+```js
+await api.post("/todos", {
+  title: "Learn Axios",
+  completed: false,
+});
+```
+
+#### PUT vs PATCH
+
+- **PUT** → replace entire resource
+- **PATCH** → update partial fields
+
+```js
+api.put("/todos/1", {...});
+api.patch("/todos/1", {...});
+```
+
+---
+
+### 5️⃣ Multiple Requests (Parallel)
+
+```js
+const [userRes, todoRes] = await Promise.all([
+  api.get("/users/1"),
+  api.get("/todos/1"),
+]);
+```
+
+Explain:
+
+> Axios exposes `axios.all`, but `Promise.all` is the modern, standard approach.
+
+---
+
+### ✅ Add a “Key Takeaways” section
+
+Example:
+
+> - Prefer `axios.create()` for scalable apps
+> - Use interceptors for cross-cutting concerns
+> - Use async/await for readable async flows
+
+---

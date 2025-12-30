@@ -1,5 +1,5 @@
 import { setupCounter } from "./counter.js";
-import { setupTodoApp } from "./todo.js";
+import { setupTodoApp } from "./axios-demo.js";
 import javascriptLogo from "./javascript.svg";
 import "./style.css";
 import lousingLogo from "/lousing-logo.svg";
